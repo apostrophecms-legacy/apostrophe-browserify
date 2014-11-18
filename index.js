@@ -74,20 +74,20 @@ aposBrowserify.AposBrowserify = function(options, callback) {
     if(development) {
       b.on('update', function(ids) {
         if(verbose) {
-          process.stdout.write('detected a change in frontend assets. bundling...   ');
+          process.stdout.write('Detected a change in frontend assets. bundling...   ');
         }
         bundleAssets(function() {
           if(verbose) {
-            console.log('finished bundling.'.red.bold);
+            console.log('Finished bundling.'.green.bold);
           }
         });
       });
-      console.log('Created watchify update event.'.yellow.bold);
+      console.log('Watchify is running.'.yellow.bold);
     }
 
     // run bundle on startup.
     bundleAssets( function() {
-      console.log('Ran initial browserify asset bundling.'.red.bold);
+      console.log('Ran initial Browserify asset bundling.'.red.green);
       return finishCallback(null);
     });
   };

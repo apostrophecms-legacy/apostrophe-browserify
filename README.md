@@ -1,6 +1,10 @@
 # Apostrophe Browserify
 
-This module enables you to use to bundle your frontend code using browserify while still taking advantage of automatic minification and Apostrophe's asset pipeline. To use it, add it to your `app.js` configuration:
+This module enables you to use to bundle your frontend code using browserify while still taking advantage of automatic minification and Apostrophe's asset pipeline.
+
+When using the `development` option `watchify` will run, recompiling your assets any time they are saved.
+
+To use it, run `npm install apostrophe-browserify --save` and add it to your `app.js` configuration:
 
 ```javascript
 {

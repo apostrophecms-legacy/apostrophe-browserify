@@ -1,6 +1,6 @@
 {
   "name": "apostrophe-browserify",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "description": "A convenience module for using browserify with frontend code in Apostrophe.",
   "main": "index.js",
   "scripts": {

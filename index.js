@@ -87,7 +87,7 @@ aposBrowserify.AposBrowserify = function(options, callback) {
 
     // run bundle on startup.
     bundleAssets( function() {
-      console.log('Ran initial Browserify asset bundling.'.red.green);
+      console.log('Ran initial Browserify asset bundling.'.green.bold);
       return finishCallback(null);
     });
   };

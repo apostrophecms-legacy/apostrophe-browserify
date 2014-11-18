@@ -1,4 +1,5 @@
 var fs = require('fs');
+var _ = require('lodash');
 var colors = require('colors');
 var browserify = require('browserify');
 var watchify = require('watchify');
@@ -18,8 +19,16 @@ aposBrowserify.AposBrowserify = function(options, callback) {
   // config
   var files = options.files;
   var basedir = options.basedir || (__dirname + '/public/js/');
-  var outputFile = './public/js/_site-compiled.js';
-  options.site.options.assets.scripts.concat('_site-compiled.js');
+  var outputFile = './public/js/' + (options.outputFile || '_site-compiled.js');
+  options.site.options.assets.scripts.concat(options.outputFile || '_site-compiled.js');
+
+  var browserifyOptions = {
+    cache: {},
+    packageCache: {},
+    fullPaths: false,
+    'opts.basedir': basedir
+  };
+  browserifyOptions = _.merge(browserifyOptions, options.browserifyOptions || {});
 
   var development = options.development;
   var verbose = (options.verbose !== false);
@@ -29,12 +38,7 @@ aposBrowserify.AposBrowserify = function(options, callback) {
     // that require() statements resolve to local files (instead of node modules).
     // if we're in development mode, wrap the browserify instance in
     // watchify so that changes are compiled auto-magically.
-    var b = browserify({
-      cache: {},
-      packageCache: {},
-      fullPaths: false,
-      'opts.basedir': basedir
-    });
+    var b = browserify(browserifyOptions);
 
     if(development) {
       b = watchify(b, { 'opts.basedir': basedir });

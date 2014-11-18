@@ -13,6 +13,7 @@
   "author": "P'unk Avenue",
   "license": "BSD",
   "dependencies": {
+    "lodash": "~2.4.1",
     "browserify": "6.3.x",
     "watchify": "2.1.x",
     "colors": "~1.0.3"

@@ -1,6 +1,6 @@
 # Apostrophe Browserify
 
-This module enables you to use to bundle your frontend code using browserify while still taking advantage of automatic minification and Apostrophe's asset pipeline.
+This [Apostrophe 2](http://apostrophenow.org/) module enables you to bundle your frontend code using [`browserify`](https://github.com/substack/node-browserify) while taking advantage of automatic minification and Apostrophe's asset pipeline.
 
 When using the `development` option `watchify` will run, recompiling your assets any time they are saved.
 

@@ -19,7 +19,8 @@ aposBrowserify.AposBrowserify = function(options, callback) {
   // config
   var files = options.files;
   var basedir = options.basedir || (__dirname + '/public/js/');
-  var outputFile = './public/js/' + (options.outputFile || '_site-compiled.js');
+  var outputFile = basedir + (options.outputFile || '_site-compiled.js');
+  // var outputFile = './public/js/' + (options.outputFile || '_site-compiled.js');
   options.site.options.assets.scripts.concat(options.outputFile || '_site-compiled.js');
 
   var browserifyOptions = {

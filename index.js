@@ -13,15 +13,17 @@ function aposBrowserify(options, callback) {
 aposBrowserify.AposBrowserify = function(options, callback) {
   var self = this;
 
+  self.site = options.site;
+  self.apos = options.apos;
+
   // Add ourselves to the "options.modules" chain
   options.modules = (options.modules || []).concat([ { dir: __dirname, name: 'apostrophe-browserify' } ]);
 
   // config
   var files = options.files;
-  var basedir = options.basedir || (__dirname + '/public/js/');
+  var basedir = options.basedir || (self.apos.options.rootDir + '/public/js/');
   var outputFile = basedir + (options.outputFile || '_site-compiled.js');
-  // var outputFile = './public/js/' + (options.outputFile || '_site-compiled.js');
-  options.site.options.assets.scripts.concat(options.outputFile || '_site-compiled.js');
+  self.site.options.assets.scripts.concat(outputFile);
 
   var browserifyOptions = {
     cache: {},

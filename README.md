@@ -4,6 +4,8 @@ This [Apostrophe 2](http://apostrophenow.org/) module enables you to bundle your
 
 When using the `development` option `watchify` will run, recompiling your assets any time they are saved.
 
+## Installation
+
 To use it, run `npm install apostrophe-browserify --save` and add it to your `app.js` configuration:
 
 ```javascript
@@ -19,9 +21,11 @@ To use it, run `npm install apostrophe-browserify --save` and add it to your `ap
 }
 ```
 
-#### Configuration
+## Configuration
 
 Apostrophe will save your bundled file to the `public/js/` directory. By default it creates `_site-compiled.js`, however the filename can be configured using the `outputFile` option.
+
+You specify your input files using the `files` option. You may specify more than one. Your input files may use the `require` statement, much as they can in node apps, as described in the [`browserify`](https://github.com/substack/node-browserify) documentation.
 
 ```javascript
 {
@@ -43,12 +47,6 @@ Apostrophe will save your bundled file to the `public/js/` directory. By default
     // time your bundle is recompiled. Defaults to `true`.
     verbose: true,
 
-    // The base directory for requiring in local files.
-    // This allows you to require other files from the
-    // same directory or from relative directories.
-    // Defaults to __dirname + '/public/js'.
-    basedir: __dirname + '/public/js',
-
     // Pass additional options into browserify if
     // necessary. Overrides any module-level options.
     browserifyOptions: {
@@ -57,3 +55,13 @@ Apostrophe will save your bundled file to the `public/js/` directory. By default
   }
 }
 ```
+
+## For production use
+
+1. Make sure you add `public/js/_site-compiled.js` to your `.gitignore` and `deployment/rsync_exclude.txt` files.
+
+2. When `minify` is true, which it should be for all production Apostrophe sites, the output file will not be recompiled, even on startup, unless it does not exist yet. Together with the `apostrophe:generation` task, this prevents race conditions in a multicore Apostrophe production environment.
+
+## Changelog
+
+0.5.5: no need to manually add the output file to your assets. Behaves properly in a multicore environment as long as `minify` is true. Documentation updated. The `basedir` option has been removed, as this module is currently only intended for project-level code, but more thought will be given to how this module could be used in conjunction with module-level code in the future.

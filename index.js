@@ -13,17 +13,40 @@ function aposBrowserify(options, callback) {
 aposBrowserify.AposBrowserify = function(options, callback) {
   var self = this;
 
-  self.site = options.site;
   self.apos = options.apos;
-
-  // Add ourselves to the "options.modules" chain
-  options.modules = (options.modules || []).concat([ { dir: __dirname, name: 'apostrophe-browserify' } ]);
 
   // config
   var files = options.files;
-  var basedir = options.basedir || (self.apos.options.rootDir + '/public/js/');
-  var outputFile = basedir + (options.outputFile || '_site-compiled.js');
-  self.site.options.assets.scripts.concat(outputFile);
+  var outputName = (options.outputFile || '_site-compiled.js');
+  var basedir = self.apos.options.rootDir + '/public/js/';
+  var outputFile = basedir + outputName;
+
+  // Borrowed from apostrophe-site. We want to push paths
+  // relative to the site. -Tom
+  function pushAsset(type, name, _options) {
+    var options = {
+      fs: self.apos.options.rootDir,
+      web: '',
+      when: 'always'
+    };
+    _.extend(options, _options);
+    return self.apos.pushAsset(type, name, options);
+  }
+
+  // This event doesn't fire until our file actually exists, which
+  // is handy because pushAsset will quitely not push it if it doesn't. -Tom
+
+  self.apos.on('beforeEndAssets', function() {
+    // Allow it to work if they specified .js explicitly. The
+    // apostrophe-browserify docs suggest that, but apostrophe's
+    // pushAsset assumes you didn't include it. -Tom
+    pushAsset('script', outputName.replace(/\.js$/, ''), {});
+  });
+
+  if (self.apos.options.minify && fs.existsSync(outputFile)) {
+    console.log('exists - skipping');
+    return finish();
+  }
 
   var browserifyOptions = {
     cache: {},
@@ -96,12 +119,12 @@ aposBrowserify.AposBrowserify = function(options, callback) {
   };
 
 
-  self.compileAssets( function() {
+  self.compileAssets(finish);
+
+  function finish() {
     // Invoke callback on next tick if we receive one
     if (callback) {
       process.nextTick(function() { return callback(null); });
     }
-  });
-
-
+  }
 };

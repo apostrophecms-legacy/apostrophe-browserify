@@ -44,7 +44,9 @@ aposBrowserify.AposBrowserify = function(options, callback) {
   });
 
   if (self.apos.options.minify && fs.existsSync(outputFile)) {
-    console.log('exists - skipping');
+    if (verbose) {
+      console.error('exists - skipping');
+    }
     return finish();
   }
 
@@ -104,16 +106,20 @@ aposBrowserify.AposBrowserify = function(options, callback) {
         }
         bundleAssets(function() {
           if(verbose) {
-            console.log('Finished bundling.'.green.bold);
+            console.error('Finished bundling.'.green.bold);
           }
         });
       });
-      console.log('Watchify is running.'.yellow.bold);
+      if (verbose) {
+        console.error('Watchify is running.'.yellow.bold);
+      }
     }
 
     // run bundle on startup.
     bundleAssets( function() {
-      console.log('Ran initial Browserify asset bundling.'.green.bold);
+      if (verbose) {
+        console.error('Ran initial Browserify asset bundling.'.green.bold);
+      }
       return finishCallback(null);
     });
   };

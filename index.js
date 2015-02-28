@@ -50,16 +50,19 @@ aposBrowserify.AposBrowserify = function(options, callback) {
     return finish();
   }
 
+  var development = options.development;
+  var verbose = (options.verbose !== false);
+
   var browserifyOptions = {
     cache: {},
     packageCache: {},
     fullPaths: false,
-    'opts.basedir': basedir
+    'opts.basedir': basedir,
+    debug: development
   };
   browserifyOptions = _.merge(browserifyOptions, options.browserifyOptions || {});
 
-  var development = options.development;
-  var verbose = (options.verbose !== false);
+
 
   self.compileAssets = function(finishCallback) {
     // make a new browserify instance and set the base directory so
@@ -69,6 +72,7 @@ aposBrowserify.AposBrowserify = function(options, callback) {
     var b = browserify(browserifyOptions);
 
     if(development) {
+      // enable source maps in watchify mode
       b = watchify(b, { 'opts.basedir': basedir });
     }
 
@@ -102,11 +106,11 @@ aposBrowserify.AposBrowserify = function(options, callback) {
     if(development) {
       b.on('update', function(ids) {
         if(verbose) {
-          process.stdout.write('Detected a change in frontend assets. bundling...   ');
+          process.stdout.write('Detected a change in frontend assets. Bundling... ');
         }
         bundleAssets(function() {
           if(verbose) {
-            console.error('Finished bundling.'.green.bold);
+            console.error('Finished bundling.'.green.bold + ' ' + Date().gray);
           }
         });
       });

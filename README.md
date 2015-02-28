@@ -64,4 +64,6 @@ You specify your input files using the `files` option. You may specify more than
 
 ## Changelog
 
-0.5.5: no need to manually add the output file to your assets. Behaves properly in a multicore environment as long as `minify` is true. Documentation updated. The `basedir` option has been removed, as this module is currently only intended for project-level code, but more thought will be given to how this module could be used in conjunction with module-level code in the future.
+`0.5.6`: added source mapping and timestamp logging on recompile when in `development` mode.
+
+`0.5.5`: no need to manually add the output file to your assets. Behaves properly in a multicore environment as long as `minify` is true. Documentation updated. The `basedir` option has been removed, as this module is currently only intended for project-level code, but more thought will be given to how this module could be used in conjunction with module-level code in the future.

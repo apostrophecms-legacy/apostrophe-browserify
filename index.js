@@ -1,8 +1,10 @@
-var fs = require('fs');
-var _ = require('lodash');
-var colors = require('colors');
+var fs         = require('fs');
+var _          = require('lodash');
+var path       = require('path');
+var colors     = require('colors');
 var browserify = require('browserify');
-var watchify = require('watchify');
+var watchify   = require('watchify');
+var notifier   = require('node-notifier');
 
 module.exports = aposBrowserify;
 
@@ -45,19 +47,23 @@ aposBrowserify.AposBrowserify = function(options, callback) {
 
   if (self.apos.options.minify && fs.existsSync(outputFile)) {
     if (verbose) {
-      console.error('exists - skipping');
+      console.error('apostrophe-browserify: output file exists - skipping');
     }
     return finish();
   }
 
   var development = options.development;
   var verbose = (options.verbose !== false);
+  var notifications = options.notifications;
 
   var browserifyOptions = {
     cache: {},
     packageCache: {},
-    fullPaths: false,
     'opts.basedir': basedir,
+
+    // if we are in development mode we want fullPaths to enable sourceMaps
+    fullPaths: development,
+    // enable sourceMaps in development
     debug: development
   };
   browserifyOptions = _.merge(browserifyOptions, options.browserifyOptions || {});
@@ -85,19 +91,31 @@ aposBrowserify.AposBrowserify = function(options, callback) {
     function bundleAssets(cb) {
       b.bundle( function(err, output) {
         if(err) {
-          console.error('There was an issue running browserify!');
-          console.error(err);
-          return finishCallback(err);
+          console.error('There was an issue running browserify! No new output file was created.'.red.bold);
+          console.error('Error: '.red + err.message);
+
+          // crash the server, but only in production mode.
+          if(!development) {
+            return callback(err);
+          }
+
+          if(development && notifications) {
+            notifier.notify({
+              title: 'Browserify Build Failed',
+              message: err.message
+            });
+          }
+
+          return cb(err);
         }
 
         // write our new file to the public/js folder
         fs.writeFile(outputFile, output, function (err) {
           if(err) {
-            console.error('There was an error saving the freshly-bundled front end code.');
-            console.error(err);
-            return finishCallback(err);
+            console.error('There was an error while writing the freshly-bundled front end code in apostrophe-browserify.');
+            console.error(err.message);
           }
-          return cb(null);
+          return cb(err);
         });
       });
     }
@@ -108,8 +126,8 @@ aposBrowserify.AposBrowserify = function(options, callback) {
         if(verbose) {
           process.stdout.write('Detected a change in frontend assets. Bundling... ');
         }
-        bundleAssets(function() {
-          if(verbose) {
+        bundleAssets(function(err) {
+          if(verbose && !err) {
             console.error('Finished bundling.'.green.bold + ' ' + Date().gray);
           }
         });
@@ -120,8 +138,8 @@ aposBrowserify.AposBrowserify = function(options, callback) {
     }
 
     // run bundle on startup.
-    bundleAssets( function() {
-      if (verbose) {
+    bundleAssets( function(err) {
+      if (verbose && !err) {
         console.error('Ran initial Browserify asset bundling.'.green.bold);
       }
       return finishCallback(null);

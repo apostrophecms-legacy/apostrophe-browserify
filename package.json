@@ -1,6 +1,6 @@
 {
   "name": "apostrophe-browserify",
-  "version": "0.5.7",
+  "version": "0.5.8",
   "description": "A convenience module for using browserify with frontend code in Apostrophe.",
   "main": "index.js",
   "scripts": {
@@ -16,6 +16,7 @@
     "lodash": "~2.4.1",
     "browserify": "6.3.x",
     "watchify": "2.1.x",
-    "colors": "~1.0.3"
+    "colors": "~1.0.3",
+    "node-notifier": "^4.2.1"
   }
 }

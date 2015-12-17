@@ -52,6 +52,16 @@ You specify your input files using the `files` option. You may specify more than
     // when watchify's build fails. Defaults to `false`.
     notifications: false,
 
+    // When this is true, browserify will run a simple babel
+    // transform on your files using the es2015 preset. You // can read about what is included with that here:
+    // http://babeljs.io/docs/plugins/preset-es2015/
+    es2015: true,
+
+    // When this option is true, you are able to write JSX
+    // React within your browserify-compiled files through
+    // the reactify transform.
+    react: true,
+
     // Pass additional options into browserify if
     // necessary. Overrides any module-level options.
     browserifyOptions: {

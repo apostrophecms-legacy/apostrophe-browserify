@@ -55,7 +55,7 @@ aposBrowserify.AposBrowserify = function(options, callback) {
   }
 
   var development = options.development;
-  var babel = options.babel;
+  var es2015 = options.es2015;
   var react = options.react;
   var verbose = (options.verbose !== false);
   var notifications = options.notifications;
@@ -91,9 +91,9 @@ aposBrowserify.AposBrowserify = function(options, callback) {
       b.add(file);
     });
 
-    if(babel){
-      // if called for, compile with babel
-      b.transform(babelify);
+    if(es2015){
+      // if called for, compile es2015 with babel
+      b.transform(babelify, { presets: ['es2015'] });
     }
 
     if(react){

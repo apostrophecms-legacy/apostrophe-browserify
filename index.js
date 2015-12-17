@@ -4,6 +4,8 @@ var path       = require('path');
 var colors     = require('colors');
 var browserify = require('browserify');
 var watchify   = require('watchify');
+var babelify   = require('babelify');
+var reactify   = require('reactify');
 var notifier   = require('node-notifier');
 
 module.exports = aposBrowserify;
@@ -53,6 +55,8 @@ aposBrowserify.AposBrowserify = function(options, callback) {
   }
 
   var development = options.development;
+  var es2015 = options.es2015;
+  var react = options.react;
   var verbose = (options.verbose !== false);
   var notifications = options.notifications;
 
@@ -86,6 +90,16 @@ aposBrowserify.AposBrowserify = function(options, callback) {
     files.forEach( function(file) {
       b.add(file);
     });
+
+    if(es2015){
+      // if called for, compile es2015 with babel
+      b.transform(babelify, { presets: ['es2015'] });
+    }
+
+    if(react){
+      //if called for, compile JSX through reactify
+      b.transform(reactify);
+    }
 
     // create the bundled file
     function bundleAssets(cb) {

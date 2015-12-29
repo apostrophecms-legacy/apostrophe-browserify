@@ -57,6 +57,7 @@ aposBrowserify.AposBrowserify = function(options, callback) {
   var development = options.development;
   var es2015 = options.es2015;
   var react = options.react;
+  var brfs = options.brfs
   var verbose = (options.verbose !== false);
   var notifications = options.notifications;
 
@@ -99,6 +100,10 @@ aposBrowserify.AposBrowserify = function(options, callback) {
     if(react){
       //if called for, compile JSX through reactify
       b.transform(reactify);
+    }
+
+    if(brfs){
+      b.transform('brfs');
     }
 
     // create the bundled file

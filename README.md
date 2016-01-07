@@ -62,6 +62,12 @@ You specify your input files using the `files` option. You may specify more than
     // the reactify transform.
     react: true,
 
+    // When this option is true, you are able to use a small
+    // subset of node's fs module: readFileSync, readFile,
+    // readdirSync, and readdir.
+    // https://github.com/substack/brfs
+    brfs: true,
+
     // Pass additional options into browserify if
     // necessary. Overrides any module-level options.
     browserifyOptions: {

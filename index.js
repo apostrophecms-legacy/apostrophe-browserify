@@ -44,14 +44,19 @@ aposBrowserify.AposBrowserify = function(options, callback) {
   });
 
   if (self.apos.options.minify && fs.existsSync(outputFile)) {
-    if (verbose) {
-      console.error('exists - skipping');
-    }
+    self.log('exists - skipping');
     return finish();
   }
 
   var development = options.development;
-  var verbose = (options.verbose !== false);
+  var verbose;
+  if (self.apos.isTask()) {
+    // Default behavior should not be to mess up the output of tasks
+    verbose = options.verbose;
+  } else {
+    // In normal startup default behavior is to be noisy (in this module)
+    verbose = (options.verbose !== false);
+  }
 
   var browserifyOptions = {
     cache: {},
@@ -109,21 +114,15 @@ aposBrowserify.AposBrowserify = function(options, callback) {
           process.stdout.write('Detected a change in frontend assets. Bundling... ');
         }
         bundleAssets(function() {
-          if(verbose) {
-            console.error('Finished bundling.'.green.bold + ' ' + Date().gray);
-          }
+          log('Finished bundling.'.green.bold + ' ' + Date().gray);
         });
       });
-      if (verbose) {
-        console.error('Watchify is running.'.yellow.bold);
-      }
+      log('Watchify is running.'.yellow.bold);
     }
 
     // run bundle on startup.
     bundleAssets( function() {
-      if (verbose) {
-        console.error('Ran initial Browserify asset bundling.'.green.bold);
-      }
+      log('Ran initial Browserify asset bundling.'.green.bold);
       return finishCallback(null);
     });
   };
@@ -136,5 +135,12 @@ aposBrowserify.AposBrowserify = function(options, callback) {
     if (callback) {
       process.nextTick(function() { return callback(null); });
     }
+  }
+
+  function log(s) {
+    if (!verbose) {
+      return;
+    }
+    console.error(s);
   }
 };

@@ -1,8 +1,12 @@
-var fs = require('fs');
-var _ = require('lodash');
-var colors = require('colors');
+var fs         = require('fs');
+var _          = require('lodash');
+var path       = require('path');
+var colors     = require('colors');
 var browserify = require('browserify');
-var watchify = require('watchify');
+var watchify   = require('watchify');
+var babelify   = require('babelify');
+var reactify   = require('reactify');
+var notifier   = require('node-notifier');
 
 module.exports = aposBrowserify;
 
@@ -44,12 +48,12 @@ aposBrowserify.AposBrowserify = function(options, callback) {
   });
 
   if (self.apos.options.minify && fs.existsSync(outputFile)) {
-    self.log('exists - skipping');
+    self.notice('exists - skipping');
     return finish();
   }
 
   var development = options.development;
-  var verbose;
+  var verbose = (options.verbose !== false);
   if (self.apos.isTask()) {
     // Default behavior should not be to mess up the output of tasks
     verbose = options.verbose;
@@ -57,12 +61,19 @@ aposBrowserify.AposBrowserify = function(options, callback) {
     // In normal startup default behavior is to be noisy (in this module)
     verbose = (options.verbose !== false);
   }
+  var es2015 = options.es2015;
+  var react = options.react;
+  var brfs = options.brfs
+  var notifications = options.notifications;
 
   var browserifyOptions = {
     cache: {},
     packageCache: {},
-    fullPaths: false,
     'opts.basedir': basedir,
+
+    // if we are in development mode we want fullPaths to enable sourceMaps
+    fullPaths: development,
+    // enable sourceMaps in development
     debug: development
   };
   browserifyOptions = _.merge(browserifyOptions, options.browserifyOptions || {});
@@ -86,23 +97,49 @@ aposBrowserify.AposBrowserify = function(options, callback) {
       b.add(file);
     });
 
+    if(es2015){
+      // if called for, compile es2015 with babel
+      b.transform(babelify, { presets: ['es2015'] });
+    }
+
+    if(react){
+      //if called for, compile JSX through reactify
+      b.transform(reactify);
+    }
+
+    if(brfs){
+      b.transform('brfs');
+    }
+
     // create the bundled file
     function bundleAssets(cb) {
       b.bundle( function(err, output) {
         if(err) {
-          console.error('There was an issue running browserify!');
-          console.error(err);
-          return finishCallback(err);
+          console.error('There was an issue running browserify! No new output file was created.'.red.bold);
+          console.error('Error: '.red + err.message);
+
+          // crash the server, but only in production mode.
+          if(!development) {
+            return callback(err);
+          }
+
+          if(development && notifications) {
+            notifier.notify({
+              title: 'Browserify Build Failed',
+              message: err.message
+            });
+          }
+
+          return cb(err);
         }
 
         // write our new file to the public/js folder
         fs.writeFile(outputFile, output, function (err) {
           if(err) {
-            console.error('There was an error saving the freshly-bundled front end code.');
-            console.error(err);
-            return finishCallback(err);
+            console.error('There was an error while writing the freshly-bundled front end code in apostrophe-browserify.');
+            console.error(err.message);
           }
-          return cb(null);
+          return cb(err);
         });
       });
     }
@@ -113,16 +150,20 @@ aposBrowserify.AposBrowserify = function(options, callback) {
         if(verbose) {
           process.stdout.write('Detected a change in frontend assets. Bundling... ');
         }
-        bundleAssets(function() {
-          log('Finished bundling.'.green.bold + ' ' + Date().gray);
+        return bundleAssets(function(err) {
+          if (!err) {
+            notice('Finished bundling.'.green.bold + ' ' + Date().gray);
+          }
         });
       });
-      log('Watchify is running.'.yellow.bold);
+      notice('Watchify is running.'.yellow.bold);
     }
 
     // run bundle on startup.
-    bundleAssets( function() {
-      log('Ran initial Browserify asset bundling.'.green.bold);
+    return bundleAssets( function(err) {
+      if (!err) {
+        notice('Ran initial Browserify asset bundling.'.green.bold);
+      }
       return finishCallback(null);
     });
   };
@@ -137,10 +178,10 @@ aposBrowserify.AposBrowserify = function(options, callback) {
     }
   }
 
-  function log(s) {
+  function notice(s) {
     if (!verbose) {
       return;
     }
-    console.error(s);
+    console.error('apostrophe-browserify: ' + s);
   }
 };

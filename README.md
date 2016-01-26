@@ -47,6 +47,27 @@ You specify your input files using the `files` option. You may specify more than
     // time your bundle is recompiled. Defaults to `true`.
     verbose: true,
 
+    // When this is true and `development` is also true
+    // your operating system will generate a notification
+    // when watchify's build fails. Defaults to `false`.
+    notifications: false,
+
+    // When this is true, browserify will run a simple babel
+    // transform on your files using the es2015 preset. You // can read about what is included with that here:
+    // http://babeljs.io/docs/plugins/preset-es2015/
+    es2015: true,
+
+    // When this option is true, you are able to write JSX
+    // React within your browserify-compiled files through
+    // the reactify transform.
+    react: true,
+
+    // When this option is true, you are able to use a small
+    // subset of node's fs module: readFileSync, readFile,
+    // readdirSync, and readdir.
+    // https://github.com/substack/brfs
+    brfs: true,
+
     // Pass additional options into browserify if
     // necessary. Overrides any module-level options.
     browserifyOptions: {
@@ -63,6 +84,8 @@ You specify your input files using the `files` option. You may specify more than
 2. When `minify` is true, which it should be for all production Apostrophe sites, the output file will not be recompiled, even on startup, unless it does not exist yet. Together with the `apostrophe:generation` task, this prevents race conditions in a multicore Apostrophe production environment.
 
 ## Changelog
+
+`0.5.8`: added native notifications when build fails, improved error logging. Updated styling of console logs to be a little clearer.
 
 `0.5.6`: added source mapping and timestamp logging on recompile when in `development` mode.
 

@@ -48,17 +48,22 @@ aposBrowserify.AposBrowserify = function(options, callback) {
   });
 
   if (self.apos.options.minify && fs.existsSync(outputFile)) {
-    if (verbose) {
-      console.error('apostrophe-browserify: output file exists - skipping');
-    }
+    self.notice('exists - skipping');
     return finish();
   }
 
   var development = options.development;
+  var verbose = (options.verbose !== false);
+  if (self.apos.isTask()) {
+    // Default behavior should not be to mess up the output of tasks
+    verbose = options.verbose;
+  } else {
+    // In normal startup default behavior is to be noisy (in this module)
+    verbose = (options.verbose !== false);
+  }
   var es2015 = options.es2015;
   var react = options.react;
   var brfs = options.brfs
-  var verbose = (options.verbose !== false);
   var notifications = options.notifications;
 
   var browserifyOptions = {
@@ -145,21 +150,19 @@ aposBrowserify.AposBrowserify = function(options, callback) {
         if(verbose) {
           process.stdout.write('Detected a change in frontend assets. Bundling... ');
         }
-        bundleAssets(function(err) {
-          if(verbose && !err) {
-            console.error('Finished bundling.'.green.bold + ' ' + Date().gray);
+        return bundleAssets(function(err) {
+          if (!err) {
+            notice('Finished bundling.'.green.bold + ' ' + Date().gray);
           }
         });
       });
-      if (verbose) {
-        console.error('Watchify is running.'.yellow.bold);
-      }
+      notice('Watchify is running.'.yellow.bold);
     }
 
     // run bundle on startup.
-    bundleAssets( function(err) {
-      if (verbose && !err) {
-        console.error('Ran initial Browserify asset bundling.'.green.bold);
+    return bundleAssets( function(err) {
+      if (!err) {
+        notice('Ran initial Browserify asset bundling.'.green.bold);
       }
       return finishCallback(null);
     });
@@ -173,5 +176,12 @@ aposBrowserify.AposBrowserify = function(options, callback) {
     if (callback) {
       process.nextTick(function() { return callback(null); });
     }
+  }
+
+  function notice(s) {
+    if (!verbose) {
+      return;
+    }
+    console.error('apostrophe-browserify: ' + s);
   }
 };

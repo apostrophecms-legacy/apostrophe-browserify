@@ -48,7 +48,7 @@ aposBrowserify.AposBrowserify = function(options, callback) {
   });
 
   if (self.apos.options.minify && fs.existsSync(outputFile)) {
-    self.notice('exists - skipping');
+    notice('exists - skipping');
     return finish();
   }
 

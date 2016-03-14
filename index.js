@@ -154,6 +154,8 @@ aposBrowserify.AposBrowserify = function(options, callback) {
           if (!err) {
             notice('Finished bundling.'.green.bold + ' ' + Date().gray);
           }
+          console.error('\n* * * HEY * * *');
+          console.error('Your site will FAIL IN PRODUCTION if you don\'t fix this!\n');
         });
       });
       notice('Watchify is running.'.yellow.bold);
@@ -164,17 +166,18 @@ aposBrowserify.AposBrowserify = function(options, callback) {
       if (!err) {
         notice('Ran initial Browserify asset bundling.'.green.bold);
       }
-      return finishCallback(null);
+      // Stop the show on error! The site is not usable without a successful build. -Tom and Austin
+      return finishCallback(err);
     });
   };
 
 
   self.compileAssets(finish);
 
-  function finish() {
+  function finish(err) {
     // Invoke callback on next tick if we receive one
     if (callback) {
-      process.nextTick(function() { return callback(null); });
+      process.nextTick(function() { return callback(err); });
     }
   }
 

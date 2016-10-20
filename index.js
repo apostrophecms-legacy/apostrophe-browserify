@@ -153,9 +153,11 @@ aposBrowserify.AposBrowserify = function(options, callback) {
         return bundleAssets(function(err) {
           if (!err) {
             notice('Finished bundling.'.green.bold + ' ' + Date().gray);
+          } else {
+            console.error(err);
+            console.error('\n* * * HEY * * *');
+            console.error('Your site will FAIL IN PRODUCTION if you don\'t fix this!\n');
           }
-          console.error('\n* * * HEY * * *');
-          console.error('Your site will FAIL IN PRODUCTION if you don\'t fix this!\n');
         });
       });
       notice('Watchify is running.'.yellow.bold);

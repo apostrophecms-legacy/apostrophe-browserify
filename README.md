@@ -1,3 +1,9 @@
+# DEPRECATED
+
+This module is for Apostrophe 0.5 only, not the 2.x stable release.
+
+Even with 0.5, it requires the server to run browserify and babel, which slows things down needlessly. Just create your own gulp workflow in development which generates an output file that is pushed as an asset to Apostrophe in the usual way.
+
 # Apostrophe Browserify
 
 This [Apostrophe 2](http://apostrophenow.org/) module enables you to bundle your frontend code using [`browserify`](https://github.com/substack/node-browserify) while taking advantage of automatic minification and Apostrophe's asset pipeline.

@@ -1,3 +1,7 @@
+# ⛔️ **DEPRECATED** — do not use for new projects
+
+See [our current docs](https://docs.apostrophecms.org/)
+
 # DEPRECATED
 
 This module is for Apostrophe 0.5 only, not the 2.x stable release.
